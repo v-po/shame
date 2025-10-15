@@ -2,7 +2,6 @@ use std::{borrow::Cow, fmt::Display, sync::Arc};
 
 use crate::common::ignore_eq::IgnoreInEqOrdHash;
 
-
 /// canonical name of something, as opposed to `Ident` which would be an
 /// identifier that changes between creation and final appearance in a shader.
 ///
@@ -28,6 +27,7 @@ use crate::common::ignore_eq::IgnoreInEqOrdHash;
 /// - `s_vec3` = final identifier
 ///
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct CanonName(pub Cow<'static, str>);
 
 impl std::ops::Deref for CanonName {

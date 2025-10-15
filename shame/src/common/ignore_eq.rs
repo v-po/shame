@@ -4,6 +4,7 @@ use std::fmt::Display;
 pub struct InEqOrd<T>(pub T);
 
 #[derive(Debug, Clone, Copy)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct IgnoreInEqOrdHash<T>(pub T);
 
 impl<T: Display> Display for IgnoreInEqOrdHash<T> {

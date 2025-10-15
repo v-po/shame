@@ -35,6 +35,7 @@ impl std::fmt::Display for BindPath {
 
 /// (no documentation yet)
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum BindingType {
     /// (no documentation yet)
     Buffer {
@@ -117,6 +118,7 @@ impl BindingType {
 
 #[allow(missing_docs)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum BufferBindingType {
     Uniform,
     Storage(AccessModeReadable),
@@ -124,6 +126,7 @@ pub enum BufferBindingType {
 
 /// a sampler's texture sampling method
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum SamplingMethod {
     /// filtering (bilinear, trilinear, anisotropic etc.)
     #[default]

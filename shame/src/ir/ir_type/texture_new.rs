@@ -4,12 +4,75 @@ use super::{Len, ScalarType};
 use crate::{
     frontend::{any::shared_io::SamplingMethod, texture::texture_formats::BuiltinTextureFormatId},
     ir::SizedType,
+    TextureFormat,
 };
-use std::{fmt::Display, hash::Hash, num::NonZeroU32, sync::Arc};
+use std::{
+    fmt::{self, Display},
+    hash::Hash,
+    num::NonZeroU32,
+    sync::Arc,
+};
 
 /// (no documentation yet)
 #[derive(Clone)]
 pub struct TextureFormatWrapper(Arc<dyn TextureFormatId>);
+
+#[cfg(feature = "serde")]
+mod texture_format_serde {
+    use super::*;
+    use std::borrow::Cow;
+
+    #[derive(serde::Serialize, serde::Deserialize)]
+    enum TextureFormatSer {
+        Builtin(BuiltinTextureFormatId),
+        Custom { binary_repr: Vec<u8> },
+    }
+
+    /// A proxy type that implements `TextureFormatId` for deserialized custom formats.
+    /// The shame_wgpu conversion layer resolves custom formats by matching `binary_repr`.
+    #[derive(Debug)]
+    struct DeserializedCustomFormat {
+        binary_repr: Vec<u8>,
+    }
+
+    impl TextureFormatId for DeserializedCustomFormat {
+        fn to_binary_repr(&self) -> Cow<[u8]> { Cow::Borrowed(&self.binary_repr) }
+        fn to_wgsl_repr(&self) -> Option<Cow<str>> { None }
+        fn sample_type(&self) -> Option<super::TextureSampleUsageType> { None }
+        fn has_aspect(&self, _aspect: super::TextureAspect) -> bool { false }
+        fn is_blendable(&self) -> bool { false }
+    }
+
+    impl serde::Serialize for TextureFormatWrapper {
+        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde::Serializer,
+        {
+            let repr = match self.as_builtin() {
+                Some(id) => TextureFormatSer::Builtin(id),
+                None => TextureFormatSer::Custom {
+                    binary_repr: self.0.to_binary_repr().into_owned(),
+                },
+            };
+            repr.serialize(serializer)
+        }
+    }
+
+    impl<'de> serde::Deserialize<'de> for TextureFormatWrapper {
+        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+        where
+            D: serde::Deserializer<'de>,
+        {
+            let repr = TextureFormatSer::deserialize(deserializer)?;
+            Ok(match repr {
+                TextureFormatSer::Builtin(id) => TextureFormatWrapper::new(id),
+                TextureFormatSer::Custom { binary_repr } => {
+                    TextureFormatWrapper(Arc::new(DeserializedCustomFormat { binary_repr }))
+                }
+            })
+        }
+    }
+}
 
 impl std::fmt::Debug for TextureFormatWrapper {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{:?}", &*self.0) }
@@ -133,6 +196,7 @@ pub enum TextureAspect {
 
 /// (no documentation yet)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum TextureSampleUsageType {
     /// doesn't have to be filtered, can also be nearest sampled
     FilterableFloat {
@@ -197,8 +261,8 @@ impl TextureSampleUsageType {
             TextureSampleUsageType::Nearest {
                 len: _,
                 channel_type: _,
-            } |
-            TextureSampleUsageType::Depth => false,
+            }
+            | TextureSampleUsageType::Depth => false,
         }
     }
 
@@ -253,6 +317,7 @@ impl From<TextureSampleUsageType> for SizedType {
 /// (e.g. `Rgba8Unorm` stores 8-bit `unorm8` channels, but after sampling they are `f32`s)
 #[allow(missing_docs)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum ChannelFormatShaderType {
     F32,
     I32,
@@ -295,12 +360,15 @@ impl ScalarType {
 impl TryFrom<ScalarType> for ChannelFormatShaderType {
     type Error = ();
 
-    fn try_from(value: ScalarType) -> Result<Self, Self::Error> { value.as_channel_format_shader_type().ok_or(()) }
+    fn try_from(value: ScalarType) -> Result<Self, Self::Error> {
+        value.as_channel_format_shader_type().ok_or(())
+    }
 }
 
 /// (no documentation yet)
 #[allow(missing_docs)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum TextureShape {
     _1D,
     _2D,
@@ -349,6 +417,7 @@ impl TextureShape {
 
 /// amount of samples per pixel
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum SamplesPerPixel {
     /// one sample per pixel
     Single,

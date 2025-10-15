@@ -27,6 +27,7 @@ pub enum Type {
 /// types that pointers/reference can point to.
 #[doc(hidden)] // runtime api
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum StoreType {
     /// WGSL "creation-fixed-footprint"
     Sized(SizedType),
@@ -39,6 +40,7 @@ pub enum StoreType {
 /// WGSL "creation-fixed-footprint"
 #[doc(hidden)] // runtime api
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum SizedType {
     /// Scalar or Vector
     ///
@@ -53,6 +55,7 @@ pub enum SizedType {
 /// types that represent handles to resources (Textures and Samplers).
 #[doc(hidden)] // runtime api
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum HandleType {
     SampledTexture(TextureShape, TextureSampleUsageType, SamplesPerPixel),
     StorageTexture(TextureShape, TextureFormatWrapper, AccessMode),

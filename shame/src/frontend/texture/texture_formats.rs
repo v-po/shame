@@ -90,6 +90,7 @@ pub mod astc {
     /// (no documentation yet)
     #[repr(u8)]
     #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+    #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
     pub enum AstcChannel {
         /// (no documentation yet)
         Unorm,
@@ -131,6 +132,7 @@ pub mod astc {
     /// ASTC block size in texels
     #[repr(u8)]
     #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+    #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
     pub enum AstcBlock {
         /// 4x4 block compressed texture. 16 bytes per block (8 bit/px).
         B4x4,
@@ -222,7 +224,7 @@ macro_rules! impl_texture_formats {
             $($Blendable: ident)?,
             // Target(Color + Depth + Stencil),
             $(Target($($ColorTgt: ident)? + $($DepthTgt: ident)? + $($StencilTgt: ident)?))?,
-            // Aspect< Color( vec<f32, x4> ) + Depth( vec<f32, x1> ) + Stencil( vec<u32, x1> ) >, 
+            // Aspect< Color( vec<f32, x4> ) + Depth( vec<f32, x1> ) + Stencil( vec<u32, x1> ) >,
             $(Aspect<
                 $( Color  (vec<$Color_Scalar: ident ,    $Color_xN: ident> ) )? +
                 $( Depth  (vec<$Depth_Scalar: ident ,    $Depth_xN: ident> ) )? +
@@ -240,6 +242,7 @@ macro_rules! impl_texture_formats {
         // define format enum
         #[repr(u8)]
         #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+        #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
         #[doc = "Id of a given builtin texture format"]
         #[allow(missing_docs)]
         pub enum BuiltinTextureFormatId {
@@ -298,7 +301,7 @@ macro_rules! impl_texture_formats {
             }
 
             /// the type that appears in the shader after sampling from this texture
-            /// 
+            ///
             /// `None` for non sampleable textures
             pub fn sampling_result_type(&self) -> Option<(crate::ir::Len, crate::ir::ChannelFormatShaderType)> {
                 #[allow(non_camel_case_types)]

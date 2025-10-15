@@ -89,6 +89,7 @@ impl ShaderStage {
 /// For example, it can hold a compute-shader bit and a vertex-shader bit
 /// at the same time, even though these shaders can never coexist in a pipeline.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct StageMask(u8);
 
 impl StageMask {

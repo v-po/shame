@@ -33,6 +33,7 @@
 /// for more information on how the blend equation works
 /// see the documentation of [`BlendComponent`]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Blend {
     /// blend operation applied to the red, green and blue components
     pub color: BlendComponent,
@@ -153,6 +154,7 @@ impl Display for BlendComponent {
 ///
 /// Src.rgb * Src.alpha + Dst.rgb * 1.0
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct BlendComponent {
     /// factor multiplied with the per-fragment color that was calculated by
     /// the pipeline
@@ -164,9 +166,9 @@ pub struct BlendComponent {
     pub operation: BlendOperation,
 }
 
-
 /// A factor used in the blend equation, see [`BlendComponent`]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum BlendFactor {
     /// 0.0
     Zero = 0,
@@ -201,6 +203,7 @@ use BlendFactor::*;
 
 /// A binary operator used in the blend equation, see [`BlendComponent`]
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum BlendOperation {
     /// Src + Dst
     #[default]

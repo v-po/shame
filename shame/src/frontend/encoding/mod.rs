@@ -73,7 +73,6 @@ pub mod pipeline_kind {
 }
 use crate as shame;
 
-
 /// start a pipeline encoding on the current thread. The encoding is in progress
 /// for as long as the returned [`EncodingGuard`] object is alive. The encoding
 /// is concluded by calling `encoding_guard.finish()`, which gives access to the

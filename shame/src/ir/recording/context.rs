@@ -370,7 +370,6 @@ impl Context {
                 let user_vis = wip_binding.user_defined_visibility;
                 let required_vis = self.pool()[wip_binding.node].stages.must_appear_in();
 
-
                 if user_vis != (user_vis | required_vis) {
                     return Err(into_err(
                         wip_binding.call_info,
@@ -432,8 +431,8 @@ impl Context {
                             Language::Wgsl => LanguageCode::Wgsl(shader_code),
                         });
                         RenderPipelineShaders {
-                            vert_entry_point: "vert_main",
-                            frag_entry_point: "frag_main",
+                            vert_entry_point: "vert_main".to_string(),
+                            frag_entry_point: "frag_main".to_string(),
                             vert_code: shader_code.clone(),
                             frag_code: shader_code,
                         }
@@ -494,7 +493,7 @@ impl Context {
                         code: match self.settings.lang {
                             Language::Wgsl => LanguageCode::Wgsl(shader_code),
                         },
-                        entry_point: "comp_main",
+                        entry_point: "comp_main".to_string(),
                     },
                     pipeline: ComputePipelineInfo {
                         grid_info: ComputeGridInfo {

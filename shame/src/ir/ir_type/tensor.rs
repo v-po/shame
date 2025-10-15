@@ -9,6 +9,7 @@ use super::{SizedType, Type};
 
 /// (no documentation yet)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum Len {
     /// (no documentation yet)
     X1,
@@ -24,6 +25,7 @@ pub enum Len {
 /// useful for example in matrix column/row sizes
 #[doc(hidden)] // runtime api
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum Len2 {
     X2,
     X3,
@@ -36,6 +38,7 @@ impl Display for Len2 {
 
 /// even length values
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum LenEven {
     /// (no documentation yet)
     X2,
@@ -106,6 +109,7 @@ impl Len {
 
 /// (no documentation yet)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum ScalarType {
     /// (no documentation yet)
     F16,
@@ -185,6 +189,7 @@ impl Display for ScalarType {
 
 #[doc(hidden)] // runtime api
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum ScalarTypeFp {
     F16,
     F32,
@@ -233,6 +238,7 @@ impl From<ScalarTypeFp> for ScalarType {
 
 #[doc(hidden)] // runtime api
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum ScalarTypeInteger {
     U32,
     I32,
@@ -390,6 +396,7 @@ impl Display for Len {
 
 /// (no documentation yet)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum PackedBitsPerComponent {
     /// (no documentation yet)
     _8,
@@ -408,6 +415,7 @@ impl From<PackedBitsPerComponent> for u8 {
 
 #[doc(hidden)] // runtime api
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum PackedFloat {
     /// components are `u8` or `u16` depending on `PackedBitsPerComponent`.
     /// - `u8`: `[0, 255]`
@@ -427,6 +435,7 @@ pub enum PackedFloat {
 
 #[doc(hidden)] // runtime api
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum PackedScalarType {
     Float(PackedFloat),
     Int,
@@ -435,6 +444,7 @@ pub enum PackedScalarType {
 
 #[doc(hidden)] // runtime api
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct PackedVector {
     pub len: LenEven,
     pub bits_per_component: PackedBitsPerComponent,

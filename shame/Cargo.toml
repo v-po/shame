@@ -18,10 +18,13 @@ shorthand_float_ranges = []
 # enables the `shame::Settings::error_excerpt` setting
 error_excerpt = []
 debug_print = []
+# enables serde Serialize/Deserialize derives on pipeline output types
+serde = ["dep:serde"]
 
 [dependencies]
 thiserror = "1.0.47"
 shame_derive = { path = "../shame_derive/" }
+serde = { version = "1.0.220", features = ["derive", "rc"], optional = true }
 
 [dev-dependencies]
 static_assertions = "1.1.0"

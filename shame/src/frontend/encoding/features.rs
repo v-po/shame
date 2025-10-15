@@ -39,6 +39,7 @@ use crate::{
 /// The [`Indexing`] sequence corresponds to `WebGPU`'s `vertexIndexList`
 /// see https://www.w3.org/TR/webgpu/#vertex-processing
 #[derive(Default, Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum Indexing {
     /// counting up incrementally,
     /// like 0, 1, 2, 3, 4...

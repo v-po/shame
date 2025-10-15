@@ -3,6 +3,7 @@ use std::fmt::Display;
 /// a power of two that fits in an `u32`'s value range
 #[allow(missing_docs)]
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Ord, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum U32PowerOf2 {
     _1,
     _2,

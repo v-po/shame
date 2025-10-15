@@ -16,6 +16,7 @@ type Bits = u64;
 /// The bits are accessible via [`BitVec64::as_u64()`] combined with [`BitVec64::occupied_mask()`]
 /// or via [`std::ops::Index`] / [`std::iter::IntoIterator`] as `bool`s
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct BitVec64 {
     bits: Bits,
     /// len up to 64

@@ -106,6 +106,7 @@ pub enum Indirection {
 
 #[allow(missing_docs)] // runtime api
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum AccessMode {
     Read,
     Write,
@@ -117,6 +118,7 @@ pub enum AccessMode {
 /// implements `Into<AccessMode>`
 #[allow(missing_docs)] // runtime api
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum AccessModeReadable {
     Read,
     ReadWrite,
