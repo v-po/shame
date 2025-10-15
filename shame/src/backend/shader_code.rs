@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::{
     common::{format::num_digits, ignore_eq::IgnoreInEqOrdHash, prettify::*},
     ir::recording::CallInfo,
@@ -43,12 +45,36 @@ pub struct ShaderCode {
     pub(super) origin_spans: IgnoreInEqOrdHash<Vec<(Range<usize>, CallInfo)>>,
 }
 
+impl Serialize for ShaderCode {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.string.serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for ShaderCode {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        Ok(ShaderCode {
+            string: s,
+            origin_spans: IgnoreInEqOrdHash(Vec::new()),
+        })
+    }
+}
+
 impl From<ShaderCode> for Cow<'static, str> {
-    fn from(value: ShaderCode) -> Self { value.string.into() }
+    fn from(value: ShaderCode) -> Self {
+        value.string.into()
+    }
 }
 
 /// shader code, put in different enum variants based on the target language/bytecode
-#[derive(Clone, PartialEq, Eq, Hash)]
+#[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum LanguageCode {
     /// webgpu shading language https://www.w3.org/TR/WGSL/
     Wgsl(ShaderCode), // SpirV(Rc<u32>, Vec<(Range<usize>, CallInfo)>)

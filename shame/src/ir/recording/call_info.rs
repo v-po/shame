@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use serde::{Deserialize, Serialize};
+
 use super::Context;
 
 /// information about a function caller, such as rust-code location

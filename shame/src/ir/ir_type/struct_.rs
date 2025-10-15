@@ -5,6 +5,7 @@ use std::{
     rc::Rc,
 };
 
+use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use super::{align_of_array, canon_name::CanonName, round_up, LayoutError, SizedType, StoreType, Type};
@@ -79,7 +80,7 @@ impl Field for RuntimeSizedArrayField {
 }
 
 #[allow(missing_docs)] // runtime api
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct SizedField {
     pub name: CanonName,
     pub custom_min_size: Option<u64>,
@@ -88,7 +89,7 @@ pub struct SizedField {
 }
 
 #[allow(missing_docs)] // runtime api
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct RuntimeSizedArrayField {
     pub name: CanonName,
     pub custom_min_align: Option<U32PowerOf2>,
@@ -143,7 +144,7 @@ impl RuntimeSizedArrayField {
 }
 
 #[doc(hidden)] // runtime api
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Struct {
     kind: StructKind,
     // in `shame`, two structs with the same name but different fields may exist.
@@ -316,18 +317,18 @@ impl Struct {
     pub(crate) fn is_creation_fixed_footprint(&self) -> bool {
         self.sized_fields
             .iter()
-            .all(|field| StoreType::is_creation_fixed_footprint(&StoreType::from(field.ty.clone()))) &&
-            self.last_unsized.is_none()
+            .all(|field| StoreType::is_creation_fixed_footprint(&StoreType::from(field.ty.clone())))
+            && self.last_unsized.is_none()
     }
 
     pub(crate) fn contains_atomics(&self) -> bool {
-        self.sized_fields.iter().any(|f| f.ty.contains_atomics()) &&
-            self.last_unsized.iter().any(|f| f.element_ty.contains_atomics())
+        self.sized_fields.iter().any(|f| f.ty.contains_atomics())
+            && self.last_unsized.iter().any(|f| f.element_ty.contains_atomics())
     }
 
     pub(crate) fn is_host_shareable(&self) -> bool {
-        self.sized_fields.iter().all(|f| f.ty.is_host_shareable()) &&
-            self.last_unsized.iter().all(|f| f.element_ty.is_host_shareable())
+        self.sized_fields.iter().all(|f| f.ty.is_host_shareable())
+            && self.last_unsized.iter().all(|f| f.element_ty.is_host_shareable())
     }
 
     pub(crate) fn sized_fields(&self) -> &[SizedField] { &self.sized_fields }
@@ -367,11 +368,11 @@ impl Display for Struct {
 }
 
 #[doc(hidden)] // runtime api
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct SizedStruct(Rc<Struct>);
 
 #[doc(hidden)] // runtime api
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct BufferBlock(Rc<Struct>);
 
 impl TryFrom<BufferBlock> for SizedStruct {
@@ -508,7 +509,7 @@ impl BufferBlock {
 }
 
 #[doc(hidden)] // internal
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum StructKind {
     Sized,
     BufferBlock,
@@ -590,7 +591,6 @@ impl StructRegistry {
     /// this means if structure `b`'s fields reference a structure `a` in any way, `a` appears
     /// before `b` in this list.
     pub fn iter_topo_sorted(&self) -> impl Iterator<Item = &StructDef> { self.defs.iter().map(|(_, def)| def) }
-
 
     fn validate_custom_align_and_size(s: &Rc<Struct>) -> Result<(), LayoutError> {
         for field in s.sized_fields() {

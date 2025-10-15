@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use super::{mask::BitVec64, rasterizer::Winding};
 use crate::{
     f32x1,
@@ -278,7 +280,7 @@ pub enum StencilMasking {
 }
 
 /// (no documentation yet)
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[rustfmt::skip]
 pub struct StencilState {
     /// the stencil test applied to counter-clockwise faces.
@@ -292,7 +294,7 @@ pub struct StencilState {
 }
 
 /// see https://www.w3.org/TR/webgpu/#dictdef-gpustencilfacestate
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct StencilFace {
     /// comparison operation that determines whether the stencil test passes or fails.
     ///
@@ -308,7 +310,7 @@ pub struct StencilFace {
 
 /// A comparison operation
 #[allow(missing_docs)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum Test {
     /// never passes
     Never,
@@ -327,7 +329,7 @@ pub enum Test {
 /// the operation applied to the stencil buffer
 ///
 /// see https://www.w3.org/TR/webgpu/#enumdef-gpustenciloperation
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum StencilOp {
     /// Keep the current stencil value
     #[default]
@@ -356,7 +358,7 @@ pub enum StencilOp {
 /// information about the depth and stencil test, as well as target formats
 ///
 /// see https://www.w3.org/TR/webgpu/#dictdef-gpudepthstencilstate
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct DepthStencilState {
     /// (no documentation yet)
     pub format: TextureFormatWrapper,
@@ -373,7 +375,7 @@ pub struct DepthStencilState {
 /// (no documentation yet)
 /// if unsure use `DepthBias::default()`
 // TODO(release) must be `DepthBias::zero()` for non-triangle `shame::Draw`, enforce this
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct DepthBias {
     // Constant depth biasing factor, in basic units of the depth format.
     /// (no documentation yet)

@@ -1,5 +1,7 @@
 use std::{marker::PhantomData, ops::Deref};
 
+use serde::{Deserialize, Serialize};
+
 use super::{
     io_iter::{BindGroupIter, PushConstants, VertexBufferIter},
     pipeline_kind::{Compute, Render},
@@ -38,7 +40,7 @@ use crate::{
 ///
 /// The [`Indexing`] sequence corresponds to `WebGPU`'s `vertexIndexList`
 /// see https://www.w3.org/TR/webgpu/#vertex-processing
-#[derive(Default, Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum Indexing {
     /// counting up incrementally,
     /// like 0, 1, 2, 3, 4...

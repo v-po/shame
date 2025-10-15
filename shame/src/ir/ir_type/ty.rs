@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use self::struct_::SizedStruct;
 use crate::{
     frontend::{any::shared_io, rust_types::type_layout::TypeLayoutRules},
@@ -26,7 +28,7 @@ pub enum Type {
 
 /// types that pointers/reference can point to.
 #[doc(hidden)] // runtime api
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum StoreType {
     /// WGSL "creation-fixed-footprint"
     Sized(SizedType),
@@ -38,7 +40,7 @@ pub enum StoreType {
 /// types that have a size which is known at shader creation time.
 /// WGSL "creation-fixed-footprint"
 #[doc(hidden)] // runtime api
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SizedType {
     /// Scalar or Vector
     ///
@@ -52,7 +54,7 @@ pub enum SizedType {
 
 /// types that represent handles to resources (Textures and Samplers).
 #[doc(hidden)] // runtime api
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum HandleType {
     SampledTexture(TextureShape, TextureSampleUsageType, SamplesPerPixel),
     StorageTexture(TextureShape, TextureFormatWrapper, AccessMode),

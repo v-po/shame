@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use serde::{Deserialize, Serialize};
+
 use crate::ir::ir_type::Type;
 
 // https://www.w3.org/TR/WGSL/#address-space
@@ -105,7 +107,7 @@ pub enum Indirection {
 }
 
 #[allow(missing_docs)] // runtime api
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum AccessMode {
     Read,
     Write,
@@ -116,7 +118,7 @@ pub enum AccessMode {
 ///
 /// implements `Into<AccessMode>`
 #[allow(missing_docs)] // runtime api
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum AccessModeReadable {
     Read,
     ReadWrite,

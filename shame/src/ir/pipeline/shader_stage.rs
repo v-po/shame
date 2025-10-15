@@ -3,6 +3,8 @@ use std::{
     ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, Neg, Not},
 };
 
+use serde::{Deserialize, Serialize};
+
 use super::PipelineKind;
 
 /// makes rustc check that all variants are mentioned exhaustively.
@@ -88,7 +90,7 @@ impl ShaderStage {
 /// This mask can hold bits of shaderstages from different pipeline kinds simultaneously.
 /// For example, it can hold a compute-shader bit and a vertex-shader bit
 /// at the same time, even though these shaders can never coexist in a pipeline.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Hash, Serialize, Deserialize)]
 pub struct StageMask(u8);
 
 impl StageMask {

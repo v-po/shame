@@ -19,6 +19,7 @@ use crate::ir::recording::Context;
 use crate::ir::{self, StoreType, TextureFormatWrapper, TextureSampleUsageType, Type};
 use crate::ir::{ir_type::TextureShape, AccessMode};
 use std::collections::btree_map::Entry;
+use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use super::expr::{PipelineIo, PushConstantsField};
@@ -34,7 +35,7 @@ impl std::fmt::Display for BindPath {
 }
 
 /// (no documentation yet)
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum BindingType {
     /// (no documentation yet)
     Buffer {
@@ -116,14 +117,14 @@ impl BindingType {
 }
 
 #[allow(missing_docs)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum BufferBindingType {
     Uniform,
     Storage(AccessModeReadable),
 }
 
 /// a sampler's texture sampling method
-#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SamplingMethod {
     /// filtering (bilinear, trilinear, anisotropic etc.)
     #[default]

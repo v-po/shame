@@ -1,5 +1,6 @@
 **.DS_Store
 /target
+**/target/
 Cargo.lock
 build.sh
 .vscode/launch.json

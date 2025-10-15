@@ -1,5 +1,6 @@
 use std::{fmt::Display, rc::Rc};
 
+use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::frontend::any::Any;
@@ -27,7 +28,7 @@ use crate::{
 use super::{blend::Blend, record_node, InvalidReason};
 
 #[allow(missing_docs)]
-#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Location(pub u32);
 
 impl Display for Location {
@@ -53,7 +54,7 @@ pub enum VertexLayoutError {
 
 /// location and format of a vertex attribute
 #[allow(missing_docs)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Attrib {
     /// the byte-offset of the first occurence of this vertex attribute within the vertex buffer
     pub offset: u64,
@@ -76,7 +77,7 @@ impl Attrib {
 }
 
 /// The index that is used to look up the vertex attributes within a vertex buffer
-#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum VertexBufferLookupIndex {
     /// the individual values of the buffer are looked up according to the
     /// indexing in the index buffer. If no index buffer is used, each value
@@ -105,7 +106,7 @@ impl Any {
 }
 
 /// the datatype of a vertex attribute
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum VertexAttribFormat {
     /// regular [`crate::vec`] types
     Fine(Len, ScalarType),
@@ -126,7 +127,7 @@ pub enum VertexAttribFormat {
 ///
 /// [`vec`]: crate::vec
 /// [`packed::PackedVec`]: crate::packed::PackedVec
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct VertexBufferLayout {
     /// The index that is used to look up the vertex attributes within a vertex buffer
     ///
@@ -144,7 +145,7 @@ pub struct VertexBufferLayout {
 ///
 /// - components assigned `false` will not be written to
 /// - components assigned `true` will be written to
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct ChannelWrites {
     /// whether to write to the red channel
     pub r: bool,
@@ -216,7 +217,7 @@ impl Default for ChannelWrites {
 }
 
 #[allow(missing_docs)]
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct ColorTarget {
     pub format: TextureFormatWrapper,
     pub blend: Option<Blend>,

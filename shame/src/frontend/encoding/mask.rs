@@ -4,6 +4,8 @@ use std::{
     ops::{Index, IndexMut},
 };
 
+use serde::{Deserialize, Serialize};
+
 use crate::{
     common::integer::saturating_post_dec_u8,
     frontend::{any::render_io::ChannelWrites, rust_types::len},
@@ -15,7 +17,7 @@ type Bits = u64;
 ///
 /// The bits are accessible via [`BitVec64::as_u64()`] combined with [`BitVec64::occupied_mask()`]
 /// or via [`std::ops::Index`] / [`std::iter::IntoIterator`] as `bool`s
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct BitVec64 {
     bits: Bits,
     /// len up to 64

@@ -222,7 +222,7 @@ macro_rules! impl_texture_formats {
             $($Blendable: ident)?,
             // Target(Color + Depth + Stencil),
             $(Target($($ColorTgt: ident)? + $($DepthTgt: ident)? + $($StencilTgt: ident)?))?,
-            // Aspect< Color( vec<f32, x4> ) + Depth( vec<f32, x1> ) + Stencil( vec<u32, x1> ) >, 
+            // Aspect< Color( vec<f32, x4> ) + Depth( vec<f32, x1> ) + Stencil( vec<u32, x1> ) >,
             $(Aspect<
                 $( Color  (vec<$Color_Scalar: ident ,    $Color_xN: ident> ) )? +
                 $( Depth  (vec<$Depth_Scalar: ident ,    $Depth_xN: ident> ) )? +
@@ -298,7 +298,7 @@ macro_rules! impl_texture_formats {
             }
 
             /// the type that appears in the shader after sampling from this texture
-            /// 
+            ///
             /// `None` for non sampleable textures
             pub fn sampling_result_type(&self) -> Option<(crate::ir::Len, crate::ir::ChannelFormatShaderType)> {
                 #[allow(non_camel_case_types)]

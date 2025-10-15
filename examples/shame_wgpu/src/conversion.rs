@@ -22,7 +22,9 @@ pub enum ShameToWgpuError {
 impl std::error::Error for ShameToWgpuError {}
 
 impl std::fmt::Debug for ShameToWgpuError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{self}") }
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self}")
+    }
 }
 
 impl std::fmt::Display for ShameToWgpuError {
@@ -609,8 +611,8 @@ pub fn render_pipeline(
     }
 
     let (modules, v_entry, f_entry) = {
-        let v = pdef.shaders.vert_entry_point;
-        let f = pdef.shaders.frag_entry_point;
+        let v = pdef.shaders.vert_entry_point.clone();
+        let f = pdef.shaders.frag_entry_point.clone();
         let modules = match pdef.shaders.into_shared_shader_code() {
             Ok(shader) => Modules::Shared(shader_module(gpu, shader)),
             Err((vert, frag)) => Modules::Separate(shader_module(gpu, vert), shader_module(gpu, frag)),
@@ -681,7 +683,7 @@ pub fn render_pipeline(
                     Modules::Separate(v, f) => v,
                     Modules::Shared(s) => s,
                 },
-                entry_point: Some(v_entry),
+                entry_point: Some(v_entry.as_ref()),
                 compilation_options: compilation_options.clone(),
                 buffers: &vertex_buffers,
             }
@@ -783,7 +785,7 @@ pub fn render_pipeline(
                     Modules::Separate(v, f) => f,
                     Modules::Shared(s) => s,
                 },
-                entry_point: Some(f_entry),
+                entry_point: Some(f_entry.as_ref()),
                 compilation_options,
                 targets: &targets,
             }),
@@ -810,7 +812,7 @@ pub fn compute_pipeline(
         label: pdef.label.as_ref().map(|s| s.as_ref()),
         layout: layout.as_ref(),
         module: &shader_module(gpu, pdef.shader.code),
-        entry_point: Some(pdef.shader.entry_point),
+        entry_point: Some(pdef.shader.entry_point.as_ref()),
         compilation_options: wgpu::PipelineCompilationOptions {
             constants: &[],
             zero_initialize_workgroup_memory: pdef.pipeline.grid_info.zero_init_workgroup_memory,

@@ -1,0 +1,11 @@
+[package]
+name = "pipeline"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "pipeline"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+shame = { workspace = true }

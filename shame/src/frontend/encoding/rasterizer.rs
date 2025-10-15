@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::frontend::any::render_io::{VertexBufferLookupIndex, Location};
 use crate::frontend::any::{Any, InvalidReason};
 use crate::frontend::rust_types::array::{Array, Size, UpTo8};
@@ -901,7 +903,7 @@ pub enum Accuracy {
 
 /// whether primitives are clipped when extending beyond the near/far plane of
 /// the clip space.
-#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum ZClip {
     /// clip polygons that penetrate the near or far plane at the intersection line.
     /// The parts of polygons in front of the near plane and behind the far plane will
@@ -928,7 +930,7 @@ pub enum ZClip {
 /// on a definition of "up/down/left/right", such as the signed triangle area:
 /// https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkFrontFace.html
 /// (no documentation yet)
-#[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+#[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub enum Winding {
     #[default]
     /// (default) Counter clockwise, the winding order usually used for front facing polygons.
@@ -943,7 +945,7 @@ pub enum Winding {
 /// as well as other details about culling, rasterization etc.
 ///
 /// see https://registry.khronos.org/vulkan/specs/latest/html/vkspec.html#drawing-primitive-topologies
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum Draw {
     /// draw points at the clip space positions provided by each thread
     ///

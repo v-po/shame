@@ -1,15 +1,90 @@
+use serde::{de::Visitor, Deserialize, Serialize};
 use thiserror::Error;
 
 use super::{Len, ScalarType};
 use crate::{
     frontend::{any::shared_io::SamplingMethod, texture::texture_formats::BuiltinTextureFormatId},
     ir::SizedType,
+    TextureFormat,
 };
-use std::{fmt::Display, hash::Hash, num::NonZeroU32, sync::Arc};
+use std::{
+    fmt::{self, Display},
+    hash::Hash,
+    num::NonZeroU32,
+    sync::Arc,
+};
 
 /// (no documentation yet)
 #[derive(Clone)]
 pub struct TextureFormatWrapper(Arc<dyn TextureFormatId>);
+
+// #[derive(Debug, Clone, Serialize, Deserialize)]
+// enum TextureFormatRepr {
+//     Builtin(BuiltinTextureFormatId),
+//     Custom(String), // "SurfaceFormat"
+// }
+
+impl Serialize for TextureFormatWrapper {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        if let Some(builtin) = self.as_builtin() {
+            serializer.serialize_str(&format!("{:?}", builtin))
+        } else {
+            let bytes = self.0.to_binary_repr();
+            let s = String::from_utf8_lossy(&bytes);
+            serializer.serialize_str(&s)
+        }
+
+        // if let Some(builtin) = self.as_builtin() {
+        //     serializer.serialize_str(&format!("{:?}", builtin))
+        // } else {
+        //     let bytes = self.0.to_binary_repr();
+        //     serializer.serialize_bytes(&bytes)
+        // }
+    }
+}
+
+struct TextureFormatWrapperVisitor;
+
+impl<'de> Visitor<'de> for TextureFormatWrapperVisitor {
+    type Value = TextureFormatWrapper;
+
+    fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str("a builtin texture format name or binary blob")
+    }
+
+    fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        let builtin = match v {
+            "Rgba8UnormSrgb" => BuiltinTextureFormatId::Rgba8UnormSrgb,
+            "Bgra8UnormSrgb" | "SurfaceFormat" => BuiltinTextureFormatId::Bgra8UnormSrgb,
+            "Rgba8Unorm" => BuiltinTextureFormatId::Rgba8Unorm,
+            "Bgra8Unorm" => BuiltinTextureFormatId::Bgra8Unorm,
+            _ => return Err(E::custom(format!("unknown builtin format: {}", v))),
+        };
+        Ok(TextureFormatWrapper::new(builtin))
+    }
+
+    fn visit_bytes<E>(self, v: &[u8]) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Err(E::custom("custom binary texture formats not yet supported"))
+    }
+}
+
+impl<'de> Deserialize<'de> for TextureFormatWrapper {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        deserializer.deserialize_any(TextureFormatWrapperVisitor)
+    }
+}
 
 impl std::fmt::Debug for TextureFormatWrapper {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{:?}", &*self.0) }
@@ -132,7 +207,7 @@ pub enum TextureAspect {
 }
 
 /// (no documentation yet)
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum TextureSampleUsageType {
     /// doesn't have to be filtered, can also be nearest sampled
     FilterableFloat {
@@ -197,8 +272,8 @@ impl TextureSampleUsageType {
             TextureSampleUsageType::Nearest {
                 len: _,
                 channel_type: _,
-            } |
-            TextureSampleUsageType::Depth => false,
+            }
+            | TextureSampleUsageType::Depth => false,
         }
     }
 
@@ -252,7 +327,7 @@ impl From<TextureSampleUsageType> for SizedType {
 /// the returned type per texture channel after being sampled in a shader
 /// (e.g. `Rgba8Unorm` stores 8-bit `unorm8` channels, but after sampling they are `f32`s)
 #[allow(missing_docs)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum ChannelFormatShaderType {
     F32,
     I32,
@@ -295,12 +370,14 @@ impl ScalarType {
 impl TryFrom<ScalarType> for ChannelFormatShaderType {
     type Error = ();
 
-    fn try_from(value: ScalarType) -> Result<Self, Self::Error> { value.as_channel_format_shader_type().ok_or(()) }
+    fn try_from(value: ScalarType) -> Result<Self, Self::Error> {
+        value.as_channel_format_shader_type().ok_or(())
+    }
 }
 
 /// (no documentation yet)
 #[allow(missing_docs)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum TextureShape {
     _1D,
     _2D,
@@ -348,7 +425,7 @@ impl TextureShape {
 }
 
 /// amount of samples per pixel
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SamplesPerPixel {
     /// one sample per pixel
     Single,

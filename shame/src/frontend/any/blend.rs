@@ -32,7 +32,7 @@
 /// ```
 /// for more information on how the blend equation works
 /// see the documentation of [`BlendComponent`]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub struct Blend {
     /// blend operation applied to the red, green and blue components
     pub color: BlendComponent,
@@ -152,7 +152,7 @@ impl Display for BlendComponent {
 /// rewritten to:
 ///
 /// Src.rgb * Src.alpha + Dst.rgb * 1.0
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub struct BlendComponent {
     /// factor multiplied with the per-fragment color that was calculated by
     /// the pipeline
@@ -164,9 +164,8 @@ pub struct BlendComponent {
     pub operation: BlendOperation,
 }
 
-
 /// A factor used in the blend equation, see [`BlendComponent`]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub enum BlendFactor {
     /// 0.0
     Zero = 0,
@@ -197,10 +196,11 @@ pub enum BlendFactor {
 }
 use std::fmt::Display;
 
+use serde::{Deserialize, Serialize};
 use BlendFactor::*;
 
 /// A binary operator used in the blend equation, see [`BlendComponent`]
-#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub enum BlendOperation {
     /// Src + Dst
     #[default]

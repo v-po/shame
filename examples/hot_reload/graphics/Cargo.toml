@@ -1,0 +1,27 @@
+[package]
+name = "graphics"
+version = "0.1.0"
+edition = "2024"
+
+# [lib]
+# name = "pipeline"
+# path = "src/lib.rs"
+
+[[bin]]
+name = "server"
+path = "src/main.rs"
+
+# [[bin]]
+# name = "serializer"
+# path = "src/serializer.rs"
+
+[dependencies]
+shame = { workspace = true }
+shame_wgpu = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+notify = "8.2.0"
+notify-debouncer-full = "0.6.0"
+anyhow = "1.0.100"
+libloading = "0.8.9"
+

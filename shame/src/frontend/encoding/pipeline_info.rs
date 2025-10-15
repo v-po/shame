@@ -1,5 +1,7 @@
 use std::{collections::BTreeMap, num::IntErrorKind, ops::Range, sync::Arc};
 
+use serde::{Deserialize, Serialize};
+
 use crate::{
     backend::shader_code::ShaderCode,
     common::small_vec::SmallVec,
@@ -18,7 +20,7 @@ use crate::{
 use super::{features::Indexing, fragment_test::DepthStencilState, mask::BitVec64, rasterizer::Draw, IsPipelineKind};
 
 /// shaders and pipeline info for creating a render pipeline using a graphics api
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct RenderPipeline {
     /// debug label of the render pipeline
     pub label: Option<String>,
@@ -29,7 +31,7 @@ pub struct RenderPipeline {
 }
 
 /// shader and pipeline info for creating a compute pipeline using a graphics api
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct ComputePipeline {
     /// debug label of the compute pipeline
     pub label: Option<String>,
@@ -47,7 +49,7 @@ pub(crate) enum PipelineDefinition {
 pub type Dict<K, V> = BTreeMap<K, V>;
 
 /// info required to initialize a render pipeline in addition to shaders
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct RenderPipelineInfo {
     /// vertex buffer memory layouts
@@ -69,8 +71,34 @@ pub struct RenderPipelineInfo {
     pub skippable_fragment_stage: bool,
 }
 
+impl PartialEq for RenderPipelineInfo {
+    fn eq(&self, other: &Self) -> bool {
+        self.vertex_buffers == other.vertex_buffers
+            && self.bind_groups == other.bind_groups
+            && self.push_constants == other.push_constants
+            && self.rasterizer == other.rasterizer
+            && self.depth_stencil == other.depth_stencil
+        // ingore color_targets
+            && self.skippable_fragment_stage == other.skippable_fragment_stage
+    }
+}
+
+impl Eq for RenderPipelineInfo {}
+
+impl std::hash::Hash for RenderPipelineInfo {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.vertex_buffers.hash(state);
+        self.bind_groups.hash(state);
+        self.push_constants.hash(state);
+        self.rasterizer.hash(state);
+        self.depth_stencil.hash(state);
+        // ignore color_targets
+        self.skippable_fragment_stage.hash(state);
+    }
+}
+
 /// info required to initialize a compute pipeline in addition to shaders
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct ComputePipelineInfo {
     /// compute thread-grid hierarchy setup information
@@ -82,7 +110,7 @@ pub struct ComputePipelineInfo {
 }
 
 /// compute thread-grid hierarchy setup information
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct ComputeGridInfo {
     /// the `[x, y, z]` dimensions of the thread grid that makes up a workgroup
@@ -101,7 +129,7 @@ pub struct ComputeGridInfo {
 }
 
 /// vertex and fragment shader code, as well as meta information
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct RenderPipelineShaders {
     /// the vertex shader code
     ///
@@ -111,7 +139,7 @@ pub struct RenderPipelineShaders {
     /// once for both vertex and fragment stages.
     pub vert_code: Arc<LanguageCode>,
     /// the entry point function name of the vertex shader
-    pub vert_entry_point: &'static str,
+    pub vert_entry_point: String,
     /// the fragment shader code
     ///
     /// for some target languages, `vert_code` and `frag_code` are identical
@@ -120,7 +148,7 @@ pub struct RenderPipelineShaders {
     /// once for both vertex and fragment stages.
     pub frag_code: Arc<LanguageCode>,
     /// the entry point function name of the fragment shader
-    pub frag_entry_point: &'static str,
+    pub frag_entry_point: String,
 }
 
 impl RenderPipelineShaders {
@@ -151,12 +179,12 @@ impl RenderPipelineShaders {
 }
 
 /// compute shader code and meta information
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct ComputeShader {
     /// compute shader code and span information by target language
     pub code: LanguageCode,
     /// compute shader entry point function name
-    pub entry_point: &'static str,
+    pub entry_point: String,
 }
 
 /// byte-slice ranges of push constants that each shader stage uses.
@@ -166,7 +194,7 @@ pub struct ComputeShader {
 /// module that declares a single `var<push_constant>` module-scope variable.
 ///
 /// related: the `push_constant_ranges` field at https://docs.rs/wgpu/latest/wgpu/struct.PipelineLayoutDescriptor.html
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct RenderPipelinePushConstantRanges {
     /// the byte size of the push constants. Serves as an upper bound for
     /// the ranges.
@@ -270,7 +298,7 @@ mod tests {
 }
 
 /// information about primitive assembly and rasterization setup
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct RasterizerState {
     /// Which sequence of vertex-indices are assigned to the threads of a drawcall
@@ -296,7 +324,7 @@ pub struct RasterizerState {
 }
 
 /// (no documentation yet)
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct BindGroupLayout {
     // TODO(release) low prio: add debug label
     /// (no documentation yet)
@@ -304,7 +332,7 @@ pub struct BindGroupLayout {
 }
 
 /// (no documentation yet)
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct BindingLayout {
     /// (no documentation yet)
     pub visibility: StageMask,

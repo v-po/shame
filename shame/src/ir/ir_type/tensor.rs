@@ -1,5 +1,7 @@
 use std::{fmt::Display, num::NonZeroU32};
 
+use serde::{Deserialize, Serialize};
+
 use crate::{
     common::floating_point::{f16, f32_eq_where_nans_are_equal, f64_eq_where_nans_are_equal},
     ir::Comp4,
@@ -8,7 +10,7 @@ use crate::{
 use super::{SizedType, Type};
 
 /// (no documentation yet)
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub enum Len {
     /// (no documentation yet)
     X1,
@@ -23,7 +25,7 @@ pub enum Len {
 /// Length starting at 2.
 /// useful for example in matrix column/row sizes
 #[doc(hidden)] // runtime api
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub enum Len2 {
     X2,
     X3,
@@ -35,7 +37,7 @@ impl Display for Len2 {
 }
 
 /// even length values
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum LenEven {
     /// (no documentation yet)
     X2,
@@ -105,7 +107,7 @@ impl Len {
 }
 
 /// (no documentation yet)
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum ScalarType {
     /// (no documentation yet)
     F16,
@@ -184,7 +186,7 @@ impl Display for ScalarType {
 }
 
 #[doc(hidden)] // runtime api
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub enum ScalarTypeFp {
     F16,
     F32,
@@ -232,7 +234,7 @@ impl From<ScalarTypeFp> for ScalarType {
 }
 
 #[doc(hidden)] // runtime api
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub enum ScalarTypeInteger {
     U32,
     I32,
@@ -389,7 +391,7 @@ impl Display for Len {
 }
 
 /// (no documentation yet)
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum PackedBitsPerComponent {
     /// (no documentation yet)
     _8,
@@ -407,7 +409,7 @@ impl From<PackedBitsPerComponent> for u8 {
 }
 
 #[doc(hidden)] // runtime api
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum PackedFloat {
     /// components are `u8` or `u16` depending on `PackedBitsPerComponent`.
     /// - `u8`: `[0, 255]`
@@ -426,7 +428,7 @@ pub enum PackedFloat {
 }
 
 #[doc(hidden)] // runtime api
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum PackedScalarType {
     Float(PackedFloat),
     Int,
@@ -434,7 +436,7 @@ pub enum PackedScalarType {
 }
 
 #[doc(hidden)] // runtime api
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct PackedVector {
     pub len: LenEven,
     pub bits_per_component: PackedBitsPerComponent,
