@@ -1,6 +1,7 @@
 //! shame wgpu integration
 //!
 //! bind-group and pipeline glue code
+#![allow(mismatched_lifetime_syntaxes)]
 pub use shame::*;
 pub mod bind_group;
 pub mod binding;

@@ -3,7 +3,7 @@
 //#![warn(clippy::cast_lossless)]
 #![deny(missing_docs)]
 #![allow(clippy::match_like_matches_macro, clippy::diverging_sub_expression)]
-#![allow(unused)]
+#![allow(unused, mismatched_lifetime_syntaxes)]
 
 mod backend;
 mod common;
