@@ -81,23 +81,7 @@ impl ApplicationHandlerNew for App {
         self.scene.window_event(&event)?;
         match event {
             E::RedrawRequested => {
-                if let Some(json) = self.hot_reload.try_get_new_pipeline_json() {
-                    match serde_json::from_str::<RenderPipeline>(&json) {
-                        Ok(new_pipeline) => match self.scene.try_replace_pipeline(new_pipeline, &self.gpu_setup.gpu) {
-                            Ok(_) => println!("[hot_reload] pipeline updated!"),
-                            Err(e) => eprintln!("[hot_reload] error: {}", e),
-                        },
-                        Err(e) => eprintln!("[hot_reload] invalid JSON: {}", e),
-                    }
-                }
-                let (surface, view) = self.gpu_setup.try_acquire_surface()?;
-
-                self.scene.submit_render_commands_to_gpu(&self.gpu_setup.gpu, &view)?;
-
-                self.window.pre_present_notify();
-                surface.present();
-
-                self.window.request_redraw();
+                self.handle_redraw();
             }
             E::KeyboardInput {
                 event:
@@ -120,6 +104,41 @@ impl ApplicationHandlerNew for App {
             }
             _ => (),
         }
+        Ok(())
+    }
+}
+
+impl App {
+    fn handle_redraw(&mut self) -> Result<(), Error> {
+        self.try_update_pipeline();
+        self.render_frame()?;
+        Ok(())
+    }
+
+    fn try_update_pipeline(&mut self) {
+        if let Some(json) = self.hot_reload.try_get_new_pipeline_json() {
+            self.reload_pipeline_from_json(&json);
+        }
+    }
+
+    fn reload_pipeline_from_json(&mut self, json: &str) {
+        match serde_json::from_str::<RenderPipeline>(json) {
+            Ok(p) => match self.scene.try_replace_pipeline(p, &self.gpu_setup.gpu) {
+                Ok(_) => println!("[hot_reload] pipeline updated!"),
+                Err(e) => eprintln!("[hot_reload] error: {}", e),
+            },
+            Err(e) => eprintln!("[hot_reload] invalid JSON: {}", e),
+        }
+    }
+
+    fn render_frame(&mut self) -> Result<(), Error> {
+        let (surface, view) = self.gpu_setup.try_acquire_surface()?;
+
+        self.scene.submit_render_commands_to_gpu(&self.gpu_setup.gpu, &view)?;
+
+        self.window.pre_present_notify();
+        surface.present();
+        self.window.request_redraw();
         Ok(())
     }
 }

@@ -109,7 +109,10 @@ fn get_lib_path() -> PathBuf {
     #[cfg(target_os = "macos")]
     return PathBuf::from("../target/debug/libpipeline.dylib");
 
-    #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+    #[cfg(target_os = "windows")]
+    return PathBuf::from("target/debug/pipeline.dll");
+
+    #[cfg(not(any(target_os = "linux", target_os = "macos", target_os = "windows")))]
     compile_error!("Unsupported platform!");
     unreachable!();
 }

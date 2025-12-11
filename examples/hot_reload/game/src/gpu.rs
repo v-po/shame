@@ -43,7 +43,7 @@ impl Setup {
                 required_features: wgpu::Features::empty() | wgpu::Features::PUSH_CONSTANTS,
                 // Make sure we use the texture resolution limits from the adapter, so we can support images the size of the swapchain.
                 required_limits: wgpu::Limits {
-                    max_push_constant_size: 4,
+                    max_push_constant_size: 128,
                     ..wgpu::Limits::default().using_resolution(adapter.limits())
                 },
                 memory_hints: wgpu::MemoryHints::Performance,
